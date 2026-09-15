@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizador de Estudos da Fernandones1234!</title>
+    <!-- Tailwind CSS for responsive utility framework -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Minecraft Pixel Art Font: Press Start 2P & VT323 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --font-pixel: 'Press Start 2P', monospace;
+            --font-sub: 'VT323', monospace;
+            --mc-gui-bg: #c6c6c6;
+            --mc-gui-border-light: #ffffff;
+            --mc-gui-border-dark: #555555;
+            --mc-gui-border-black: #000000;
+            --mc-slot-bg: #8b8b8b;
+            --mc-slot-dark: #373737;
+            --mc-xp-green: #70ec12;
+            --mc-xp-bg: #0d330d;
+            --mc-gold: #ffaa00;
+            --mc-diamond: #55ffff;
+            --mc-redstone: #ff5555;
+            --mc-grass: #5b8731;
+            --mc-dirt: #866043;
+        }
+
+        body {
+            font-family: var(--font-pixel);
+            background-color: #1a1614;
+            /* Pixelated dirt pattern simulation */
+            background-image: 
+                radial-gradient(#2c221e 15%, transparent 16%),
+                radial-gradient(#3a2d28 15%, transparent 16%);
+            background-size: 32px 32px;
+            background-position: 0 0, 16px 16px;
+            color: #ffffff;
+            user-select: none;
+            min-height: 100vh;
+        }
+
+        /* Minecraft 3D Inset & Outset Pixel Box Shadows */
+        .mc-box-gui {
+            background-color: var(--mc-gui-bg);
+            border: 4px solid var(--mc-gui-border-black);
+            box-shadow: 
+                inset -4px -4px 0px 0px var(--mc-gui-border-dark),
+                inset 4px 4px 0px 0px var(--mc-gui-border-light);
+            color: #212121;
+        }
+
+        .mc-slot {
+            background-color: var(--mc-slot-bg);
+            border: 3px solid var(--mc-gui-border-black);
+            box-shadow: 
+                inset 3px 3px 0px 0px var(--mc-slot-dark),
+                inset -3px -3px 0px 0px var(--mc-gui-border-light);
+        }
+
+        .mc-button {
+            background-color: #727272;
+            border: 3px solid var(--mc-gui-border-black);
+            box-shadow: 
+                inset -3px -3px 0px 0px #373737,
+                inset 3px 3px 0px 0px #dbdbdb;
+            color: #ffffff;
+            text-shadow: 2px 2px #000;
+            transition: all 0.05s ease;
+            cursor: pointer;
+        }
+
+        .mc-button:hover {
+            background-color: #8b8b8b;
+            box-shadow: 
+                inset -3px -3px 0px 0px #212121,
+                inset 3px 3px 0px 0px #ffffff;
+            color: #ffffa0;
+        }
+
+        .mc-button:active, .mc-button.active {
+            background-color: #4a4a4a;
+            box-shadow: 
+                inset 3px 3px 0px 0px #212121,
+                inset -3px -3px 0px 0px #727272;
+            transform: translateY(2px);
+        }
+
+        .mc-button-gold {
+            background-color: #d48800;
+            box-shadow: 
+                inset -3px -3px 0px 0px #805200,
+                inset 3px 3px 0px 0px #ffc04d;
+        }
+        .mc-button-gold:hover {
+            background-color: #e69500;
+        }
+
+        .mc-tooltip-box {
+            background: rgba(16, 0, 16, 0.94);
+            border: 3px solid #2b005c;
+            box-shadow: inset 0 0 10px rgba(80, 0, 160, 0.6);
+            border-radius: 4px;
+        }
+
+        .mc-title-text {
+            color: var(--mc-gold);
+            text-shadow: 3px 3px 0px #000, -2px -2px 0px #3a2700;
+        }
+
+        .mc-card {
+            background-color: #282828;
+            border: 4px solid #000;
+            box-shadow: inset -4px -4px 0px 0px #141414, inset 4px 4px 0px 0px #4a4a4a;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .mc-card:hover {
+            transform: translateY(-4px);
+            box-shadow: inset -4px -4px 0px 0px #141414, inset 4px 4px 0px 0px #666666, 0 10px 20px rgba(0,0,0,0.6);
+        }
+
+        /* XP Bar Styling */
+        .xp-bar-bg {
+            background-color: var(--mc-xp-bg);
+            border: 2px solid #000;
+            height: 18px;
+            position: relative;
+        }
+
+        .xp-bar-fill {
+            background-color: var(--mc-xp-green);
+            height: 100%;
+            box-shadow: inset 0 2px 0 #a2f862, inset 0 -2px 0 #3b8702;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1614;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #555;
+            border: 2px solid #000;
+        }
+
+        /* Pixel art pulse animation */
+        @keyframes pixel-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .animate-pixel-bounce {
+            animation: pixel-bounce 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="p-3 md:p-6 flex flex-col items-center justify-between min-h-screen">
+
+    <!-- MAIN CONTAINER -->
+    <div class="w-full max-w-6xl flex-grow flex flex-col gap-6">
+
+        <!-- TOP BAR / HEADER -->
+        <header class="mc-box-gui p-4 md:p-6 flex flex-col items-center text-center relative overflow-hidden">
+            <!-- Grass Top Trim Decorative Block -->
+            <div class="absolute top-0 left-0 right-0 h-3 bg-[#5b8731] border-b-2 border-black"></div>
+            
+            <div class="mt-2 flex items-center justify-center gap-3 flex-wrap">
+                <span class="text-3xl animate-pixel-bounce">🧱</span>
+                <h1 class="mc-title-text text-lg sm:text-2xl md:text-3xl font-bold leading-tight tracking-wider">
+                    Organizador de Estudos<br class="sm:hidden"/> da Fernandones1234!
+                </h1>
+                <span class="text-3xl animate-pixel-bounce">⚔️</span>
+            </div>
+            
+            <p class="font-['VT323'] text-xl md:text-2xl text-gray-700 mt-2 font-bold tracking-wide">
+                "Craftando a rotina perfeita & Derrotando o Dragão da Procrastinação!"
+            </p>
+
+            <!-- PLAYER XP & LEVEL BAR -->
+            <div class="w-full max-w-2xl mt-4 bg-[#a0a0a0] p-3 border-2 border-black shadow-inner">
+                <div class="flex justify-between items-center mb-1 text-xs md:text-sm font-bold text-gray-900">
+                    <span class="flex items-center gap-1">
+                        <span class="text-amber-600">🛡️</span> ESTUDANTE DE ELITE
+                    </span>
+                    <span id="xp-text" class="text-green-900">XP: 350 / 500</span>
+                </div>
+                
+                <div class="relative flex items-center">
+                    <div class="xp-bar-bg w-full">
+                        <div id="xp-fill" class="xp-bar-fill" style="width: 70%;"></div>
+                    </div>
+                    <!-- Level Number Box (Classic MC Style) -->
+                    <div id="level-badge" class="absolute left-1/2 -translate-x-1/2 -top-2 text-xl font-extrabold text-[#70ec12] [text-shadow:_2px_2px_0_#000,-2px_-2px_0_#000,2px_-2px_0_#000,-2px_2px_0_#000]">
+                        12
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- CONTROL BAR: FILTERS & ADD BUTTON -->
+        <section class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-[#212121] p-3 border-4 border-black">
+            <!-- Filter Tabs -->
+            <div class="flex flex-wrap gap-2 justify-center w-full sm:w-auto">
+                <button onclick="setFilter('todos', this)" class="mc-button active px-3 py-2 text-xs md:text-sm uppercase font-bold">
+                    📜 Todos
+                </button>
+                <button onclick="setFilter('organizacao', this)" class="mc-button px-3 py-2 text-xs md:text-sm uppercase font-bold">
+                    📦 Organização
+                </button>
+                <button onclick="setFilter('incomodo', this)" class="mc-button px-3 py-2 text-xs md:text-sm uppercase font-bold">
+                    ⚡ Incômodos
+                </button>
+            </div>
+
+            <!-- Add New Challenge Button -->
+            <button onclick="openAddModal()" class="mc-button mc-button-gold px-4 py-2 text-xs md:text-sm uppercase font-bold flex items-center gap-2 w-full sm:w-auto justify-center">
+                <span>➕ Novo Desafio</span>
+            </button>
+        </section>
+
+        <!-- CARDS GRID CONTAINER -->
+        <main id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Dynamic Cards inserted here by JavaScript -->
+        </main>
+    </div>
+
+    <!-- CRAFTING / DETAILS GUI MODAL -->
+    <div id="modal-details" class="fixed inset-0 bg-black/80 backdrop-blur-xs hidden z-50 flex items-center justify-center p-3">
+        <div class="mc-box-gui w-full max-w-2xl max-h-[90vh] overflow-y-auto p-4 md:p-6 relative text-left">
+            
+            <!-- Close Button -->
+            <button onclick="closeModal('modal-details')" class="absolute top-3 right-3 text-red-600 hover:text-red-800 font-bold text-xl px-2 border-2 border-black bg-gray-300">
+                ✖
+            </button>
+
+            <!-- Modal Header Title -->
+            <div class="border-b-4 border-[#555] pb-3 mb-4 pr-8">
+                <span id="modal-category-badge" class="text-xs uppercase px-2 py-1 bg-amber-500 text-black font-bold inline-block mb-1">
+                    ORGANIZAÇÃO
+                </span>
+                <h2 id="modal-title" class="text-base sm:text-xl font-bold text-gray-900 leading-tight">
+                    Falta de Cronograma Claro
+                </h2>
+            </div>
+
+            <!-- CRAFTING TABLE VISUAL SIMULATION -->
+            <div class="bg-[#8b8b8b] border-4 border-black p-3 mb-4 shadow-inner">
+                <div class="text-xs font-bold text-gray-900 mb-2 uppercase tracking-wider flex items-center gap-1">
+                    <span>🔨</span> RECEITA DE CRAFTING DA SOLUÇÃO:
+                </div>
+                
+                <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-4 bg-[#c6c6c6] p-4 border-2 border-black">
+                    <!-- Craft Slot 1 -->
+                    <div class="mc-slot w-14 h-14 flex flex-col items-center justify-center relative group">
+                        <span id="craft-icon-1" class="text-2xl">📖</span>
+                    </div>
+                    
+                    <span class="text-xl font-bold text-gray-800">+</span>
+
+                    <!-- Craft Slot 2 -->
+                    <div class="mc-slot w-14 h-14 flex flex-col items-center justify-center relative">
+                        <span id="craft-icon-2" class="text-2xl">⏰</span>
+                    </div>
+
+                    <span class="text-xl font-bold text-gray-800">=</span>
+
+                    <!-- Result Slot (Gold Frame) -->
+                    <div class="mc-slot w-16 h-16 bg-amber-200 border-4 border-amber-600 flex items-center justify-center relative shadow-lg">
+                        <span id="craft-result-icon" class="text-3xl">✨</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOOLTIP CONTENT STYLE BOX -->
+            <div class="mc-tooltip-box p-4 text-white mb-5 space-y-4 font-['VT323'] text-lg md:text-xl tracking-wide">
+                <div>
+                    <h3 class="text-amber-400 font-bold uppercase text-sm md:text-base tracking-widest flex items-center gap-2">
+                        <span>🔍</span> Problema no Inventário:
+                    </h3>
+                    <p id="modal-description" class="text-gray-200 mt-1 leading-relaxed">
+                        Descrição detalhada do problema.
+                    </p>
+                </div>
+
+                <div class="border-t border-purple-900/60 pt-3">
+                    <h3 class="text-red-400 font-bold uppercase text-sm md:text-base tracking-widest flex items-center gap-2">
+                        <span>⚠️</span> Sintomas no Dia a Dia:
+                    </h3>
+                    <p id="modal-symptoms" class="text-gray-200 mt-1 leading-relaxed">
+                        Sintomas enfrentados.
+                    </p>
+                </div>
+
+                <div class="border-t border-purple-900/60 pt-3">
+                    <h3 class="text-green-400 font-bold uppercase text-sm md:text-base tracking-widest flex items-center gap-2">
+                        <span>💡</span> Instruções de Montagem (Solução):
+                    </h3>
+                    <p id="modal-solution" class="text-gray-100 mt-1 leading-relaxed">
+                        Dicas e estratégias de estudo.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Actions inside Modal -->
+            <div class="flex flex-col sm:flex-row justify-end gap-3">
+                <button id="btn-complete-task" onclick="resolveCurrentTask()" class="mc-button mc-button-gold px-4 py-3 text-xs md:text-sm font-bold uppercase flex items-center justify-center gap-2">
+                    <span>⚡ Concluir Desafio (+50 XP)</span>
+                </button>
+                <button onclick="closeModal('modal-details')" class="mc-button px-4 py-3 text-xs md:text-sm font-bold uppercase">
+                    Fechar GUI
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ADD NEW CHALLENGE MODAL FORM -->
+    <div id="modal-add" class="fixed inset-0 bg-black/80 backdrop-blur-xs hidden z-50 flex items-center justify-center p-3">
+        <div class="mc-box-gui w-full max-w-lg p-5 relative">
+            <button onclick="closeModal('modal-add')" class="absolute top-3 right-3 text-red-600 font-bold text-xl px-2 border-2 border-black bg-gray-300">
+                ✖
+            </button>
+
+            <h2 class="text-base sm:text-lg font-bold text-gray-900 border-b-4 border-[#555] pb-2 mb-4">
+                ➕ Forjar Novo Desafio
+            </h2>
+
+            <form id="add-card-form" onsubmit="handleAddNewCard(event)" class="space-y-4 text-left font-['VT323'] text-xl text-gray-900">
+                <div>
+                    <label class="block font-bold text-sm font-['Press_Start_2P'] text-gray-800 mb-1">Título do Desafio:</label>
+                    <input type="text" id="form-title" required placeholder="Ex: Cansaço após a escola" 
+                        class="w-full p-2 bg-[#e0e0e0] border-2 border-black text-gray-900 font-bold focus:outline-none focus:bg-white">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-xs font-['Press_Start_2P'] text-gray-800 mb-1">Categoria:</label>
+                        <select id="form-category" class="w-full p-2 bg-[#e0e0e0] border-2 border-black font-bold">
+                            <option value="organizacao">Organização</option>
+                            <option value="incomodo">Incômodo Diário</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-xs font-['Press_Start_2P'] text-gray-800 mb-1">Ícone / Emoji:</label>
+                        <input type="text" id="form-icon" maxlength="2" value="⚡" required 
+                            class="w-full p-2 bg-[#e0e0e0] border-2 border-black text-center font-bold">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-xs font-['Press_Start_2P'] text-gray-800 mb-1">Sintomas do Dia a Dia:</label>
+                    <textarea id="form-symptoms" rows="2" required placeholder="O que você sente na prática?" 
+                        class="w-full p-2 bg-[#e0e0e0] border-2 border-black font-bold focus:outline-none focus:bg-white"></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-xs font-['Press_Start_2P'] text-gray-800 mb-1">Solução (Crafting):</label>
+                    <textarea id="form-solution" rows="2" required placeholder="Como resolver esse problema?" 
+                        class="w-full p-2 bg-[#e0e0e0] border-2 border-black font-bold focus:outline-none focus:bg-white"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2 font-['Press_Start_2P'] text-xs">
+                    <button type="button" onclick="closeModal('modal-add')" class="mc-button px-3 py-2">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="mc-button mc-button-gold px-4 py-2 font-bold">
+                        Guardar no Baú
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="mt-8 text-center text-xs text-gray-400 font-['VT323'] text-lg">
+        <p>Organizador de Estudos da Fernandones1234! • Desenvolvido em estilo Pixel Art / Minecraft GUI</p>
+    </footer>
+
+    <script>
+        // --- SOUND EFFECTS (Web Audio API Synthesizer) ---
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioCtx();
+        }
+
+        // Play retro Minecraft-style click sound
+        function playClickSound() {
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            } catch(e) {}
+        }
+
+        // Play retro XP Level-Up sound chime
+        function playXpSound() {
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + (idx * 0.06));
+                    gain.gain.setValueAtTime(0.2, now + (idx * 0.06));
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + (idx * 0.06) + 0.15);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now + (idx * 0.06));
+                    osc.stop(now + (idx * 0.06) + 0.15);
+                });
+            } catch(e) {}
+        }
+
+        // --- DATA STORE (INITIAL CARDS DATA) ---
+        let cardsData = [
+            {
+                id: 1,
+                title: "Falta de Cronograma Claro",
+                category: "organizacao",
+                icon: "🗺️",
+                craftIngredients: ["🗺️", "⏰", "📅"],
+                description: "Não saber exatamente o que ou quando estudar gera perda de tempo decidindo a próxima tarefa.",
+                symptoms: "Ficar olhando para os cadernos sem saber por onde começar; Estudar matérias aleatórias sem prioridade.",
+                solution: "Crafting do Bloco de Rotina: Crie um cronograma semanal fixo com horários definidos para cada matéria. Deixe visível na sua mesa!",
+                completed: false
+            },
+            {
+                id: 2,
+                title: "Procrastinação e Distrações",
+                category: "organizacao",
+                icon: "📱",
+                craftIngredients: ["📱", "⏳", "🛡️"],
+                description: "Interrupções constantes com redes sociais, notificações e navegação sem rumo durante o estudo.",
+                symptoms: "Pegar o celular 'só por 2 minutos' e perder 1 hora; Adiar o início dos estudos até o fim da tarde.",
+                solution: "Poção de Foco Extremo: Aplique a técnica Pomodoro (25min foco total / 5min descanso). Coloque o celular em outro cômodo ou no Modo Não Perturbe.",
+                completed: false
+            },
+            {
+                id: 3,
+                title: "Acúmulo de Matérias na Véspera",
+                category: "organizacao",
+                icon: "📚",
+                craftIngredients: ["📚", "🔥", "🧠"],
+                description: "Deixar para estudar semanas de conteúdo apenas na noite anterior à prova.",
+                symptoms: "Sensação de desespero e ansiedade; Virar a noite estudando e chegar exausto na hora do exame.",
+                solution: "Repetição Espaçada: Estude pequenas partes do conteúdo todos os dias (20 a 30 minutos). O cérebro fixa melhor e sem estresse!",
+                completed: false
+            },
+            {
+                id: 4,
+                title: "Espaço de Estudo Bagunçado",
+                category: "organizacao",
+                icon: "📦",
+                craftIngredients: ["📦", "🧹", "✨"],
+                description: "Mesa cheia de papéis aleatórios, pratos ou materiais de outras disciplinas atrapalhando o foco.",
+                symptoms: "Dificuldade para achar canetas ou anotações; Distração visual constante e irritação.",
+                solution: "Limpeza de Inventário: Mantenha na mesa APENAS o material da matéria que você está estudando no momento.",
+                completed: false
+            },
+            {
+                id: 5,
+                title: "Estresse e Cansaço Mental",
+                category: "incomodo",
+                icon: "🧪",
+                craftIngredients: ["🧪", "🍎", "💤"],
+                description: "Sensação de esgotamento e cabeça pesada logo nos primeiros minutos de leitura.",
+                symptoms: "Dor de cabeça, irritabilidade, ler a mesma linha várias vezes sem compreender nada.",
+                solution: "Poção de Regeneração: Durma de 7h a 8h por noite e faça pausas ativas a cada 1h para beber água e se alongar.",
+                completed: false
+            },
+            {
+                id: 6,
+                title: "Esquecimento de Entregas e Prazos",
+                category: "incomodo",
+                icon: "⏰",
+                craftIngredients: ["⏰", "📝", "📌"],
+                description: "Perder datas importantes de trabalhos ou trabalhos escolares por falta de acompanhamento.",
+                symptoms: "Lembrar do trabalho apenas na hora de ir dormir ou quando o professor cobra em sala.",
+                solution: "Quadro Kanban da Fernandones: Divida suas entregas nas colunas 'A Fazer', 'Em Progresso' e 'Concluído'.",
+                completed: false
+            },
+            {
+                id: 7,
+                title: "Dificuldade de Manter o Foco",
+                category: "incomodo",
+                icon: "🎯",
+                craftIngredients: ["🎯", "💡", "⚡"],
+                description: "Mente avoada que começa a divagar após 5 ou 10 minutos de leitura passiva.",
+                symptoms: "Achar a leitura chata, olhar para as paredes, sonhar acordado durante o estudo.",
+                solution: "Estudo Ativo: Não apenas leia! Faça resumos em tópicos, crie flashcards ou explique a matéria em voz alta.",
+                completed: false
+            },
+            {
+                id: 8,
+                title: "Estudar Muito Sem Absorver",
+                category: "incomodo",
+                icon: "🧠",
+                craftIngredients: ["🧠", "💎", "🏆"],
+                description: "Passar horas estudando mas esquecer quase tudo no dia seguinte ou na hora da prova.",
+                symptoms: "Sensação de que 'nada entra na cabeça' e frustração com o tempo investido.",
+                solution: "Prática de Evocação: Ao terminar um capítulo, feche o livro e tente escrever em uma folha tudo o que você lembra de cabeça.",
+                completed: false
+            }
+        ];
+
+        // --- STATE VARIABLES ---
+        let currentFilter = 'todos';
+        let currentActiveCardId = null;
+        let playerXp = 350;
+        let playerLevel = 12;
+        const xpPerLevel = 500;
+
+        // --- INITIALIZATION ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCards();
+            updateXpBarUI();
+        });
+
+        // --- FILTER LOGIC ---
+        function setFilter(filter, buttonEl) {
+            playClickSound();
+            currentFilter = filter;
+            
+            // Toggle active visual on filter buttons
+            document.querySelectorAll('section button').forEach(btn => {
+                btn.classList.remove('active', 'mc-button-gold');
+            });
+            if (buttonEl) buttonEl.classList.add('active');
+
+            renderCards();
+        }
+
+        // --- RENDER CARDS GRID ---
+        function renderCards() {
+            const container = document.getElementById('cards-grid');
+            container.innerHTML = '';
+
+            const filteredData = cardsData.filter(item => {
+                if (currentFilter === 'todos') return true;
+                return item.category === currentFilter;
+            });
+
+            if (filteredData.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full mc-box-gui p-8 text-center text-gray-800">
+                        <p class="text-xl font-bold">Nenhum item encontrado no baú!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredData.forEach(card => {
+                const categoryLabel = card.category === 'organizacao' ? 'Organização' : 'Incômodo';
+                const categoryColor = card.category === 'organizacao' ? 'bg-amber-500' : 'bg-red-500';
+
+                const cardEl = document.createElement('div');
+                cardEl.className = `mc-card p-4 flex flex-col justify-between relative cursor-pointer ${card.completed ? 'opacity-70 border-green-600' : ''}`;
+                
+                cardEl.innerHTML = `
+                    <div>
+                        <!-- Header slot & badge -->
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="mc-slot w-12 h-12 flex items-center justify-center text-2xl">
+                                ${card.icon}
+                            </div>
+                            <span class="text-[10px] uppercase font-bold text-black ${categoryColor} px-2 py-1 border border-black">
+                                ${categoryLabel}
+                            </span>
+                        </div>
+
+                        <!-- Card Title -->
+                        <h3 class="text-sm font-bold text-white mb-2 leading-tight ${card.completed ? 'line-through text-gray-400' : ''}">
+                            ${card.title}
+                        </h3>
+
+                        <!-- Brief Symptoms snippet -->
+                        <p class="font-['VT323'] text-lg text-gray-300 line-clamp-2 leading-snug mb-4">
+                            "${card.symptoms}"
+                        </p>
+                    </div>
+
+                    <!-- Card Footer Actions -->
+                    <div class="border-t border-gray-700 pt-3 flex items-center justify-between gap-2">
+                        <button onclick="event.stopPropagation(); openDetailsModal(${card.id})" class="mc-button px-3 py-1.5 text-[10px] uppercase font-bold text-yellow-300 flex items-center gap-1">
+                            <span>🔨 Craftar</span>
+                        </button>
+                        
+                        <button onclick="event.stopPropagation(); toggleCardCompletion(${card.id})" 
+                            class="mc-button ${card.completed ? 'bg-green-700' : ''} px-2 py-1.5 text-[10px] font-bold">
+                            ${card.completed ? '✅ Feito' : '⏳ Pendente'}
+                        </button>
+                    </div>
+                `;
+
+                cardEl.addEventListener('click', () => {
+                    playClickSound();
+                    openDetailsModal(card.id);
+                });
+
+                container.appendChild(cardEl);
+            });
+        }
+
+        // --- MODAL LOGIC ---
+        function openDetailsModal(id) {
+            playClickSound();
+            const card = cardsData.find(c => c.id === id);
+            if (!card) return;
+
+            currentActiveCardId = id;
+
+            // Populate Modal Content
+            document.getElementById('modal-title').innerText = card.title;
+            
+            const badge = document.getElementById('modal-category-badge');
+            if (card.category === 'organizacao') {
+                badge.innerText = 'PROBLEMA DE ORGANIZAÇÃO';
+                badge.className = 'text-xs uppercase px-2 py-1 bg-amber-500 text-black font-bold inline-block mb-1';
+            } else {
+                badge.innerText = 'INCÔMODO DO DIA A DIA';
+                badge.className = 'text-xs uppercase px-2 py-1 bg-red-500 text-white font-bold inline-block mb-1';
+            }
+
+            // Crafting visual slots
+            document.getElementById('craft-icon-1').innerText = card.craftIngredients[0] || card.icon;
+            document.getElementById('craft-icon-2').innerText = card.craftIngredients[1] || '📜';
+            document.getElementById('craft-result-icon').innerText = card.craftIngredients[2] || '✨';
+
+            // Text contents
+            document.getElementById('modal-description').innerText = card.description;
+            document.getElementById('modal-symptoms').innerText = card.symptoms;
+            document.getElementById('modal-solution').innerText = card.solution;
+
+            // Update complete button text
+            const btnComplete = document.getElementById('btn-complete-task');
+            if (card.completed) {
+                btnComplete.innerHTML = '<span>✅ Desafio Já Concluído!</span>';
+            } else {
+                btnComplete.innerHTML = '<span>⚡ Concluir Desafio (+50 XP)</span>';
+            }
+
+            document.getElementById('modal-details').classList.remove('hidden');
+        }
+
+        function openAddModal() {
+            playClickSound();
+            document.getElementById('modal-add').classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            playClickSound();
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // --- TASK RESOLUTION & XP PROGRESSION SYSTEM ---
+        function resolveCurrentTask() {
+            if (!currentActiveCardId) return;
+            toggleCardCompletion(currentActiveCardId, true);
+            closeModal('modal-details');
+        }
+
+        function toggleCardCompletion(id, forceComplete = false) {
+            const card = cardsData.find(c => c.id === id);
+            if (!card) return;
+
+            if (forceComplete || !card.completed) {
+                card.completed = true;
+                addXp(50);
+            } else {
+                card.completed = false;
+                playClickSound();
+            }
+
+            renderCards();
+        }
+
+        function addXp(amount) {
+            playerXp += amount;
+            playXpSound();
+
+            if (playerXp >= xpPerLevel) {
+                playerXp -= xpPerLevel;
+                playerLevel += 1;
+                
+                // Level Up Visual Flash
+                const badge = document.getElementById('level-badge');
+                badge.classList.add('scale-150', 'text-yellow-300');
+                setTimeout(() => badge.classList.remove('scale-150', 'text-yellow-300'), 500);
+            }
+
+            updateXpBarUI();
+        }
+
+        function updateXpBarUI() {
+            const pct = Math.min(100, Math.max(0, (playerXp / xpPerLevel) * 100));
+            document.getElementById('xp-fill').style.width = pct + '%';
+            document.getElementById('xp-text').innerText = `XP: ${playerXp} / ${xpPerLevel}`;
+            document.getElementById('level-badge').innerText = playerLevel;
+        }
+
+        // --- ADD NEW CHALLENGE FORM HANDLER ---
+        function handleAddNewCard(e) {
+            e.preventDefault();
+            playClickSound();
+
+            const title = document.getElementById('form-title').value;
+            const category = document.getElementById('form-category').value;
+            const icon = document.getElementById('form-icon').value || '⚡';
+            const symptoms = document.getElementById('form-symptoms').value;
+            const solution = document.getElementById('form-solution').value;
+
+            const newCard = {
+                id: Date.now(),
+                title: title,
+                category: category,
+                icon: icon,
+                craftIngredients: [icon, "📖", "💡"],
+                description: "Novo desafio forjado pelo estudante.",
+                symptoms: symptoms,
+                solution: solution,
+                completed: false
+            };
+
+            cardsData.unshift(newCard);
+            renderCards();
+            closeModal('modal-add');
+            document.getElementById('add-card-form').reset();
+            
+            // Bonus XP for creating a challenge
+            addXp(25);
+        }
+    </script>
+</body>
+</html>
